@@ -13,6 +13,9 @@ REQUIRES = [
     'python-termstyle>=0.1.10',
     'pytz>=2012c',
     'redis>=2.10',
+    'requests',
+    'Flask==1.1.1',
+    'gunicorn==19.9.0'
 ]
 
 exec(open(os.path.join(os.path.dirname(__file__),
@@ -84,6 +87,7 @@ setup(
             'intelmq_psql_initdb = intelmq.bin.intelmq_psql_initdb:main',
             'intelmq.bots.experts.sieve.validator = intelmq.bots.experts.sieve.validator:main',
             'intelmqsetup = intelmq.bin.intelmqsetup:main',
+            'intelmqservice = intelmq.bin.intelmqservice:main'
         ] + BOTS,
     },
     scripts=[
