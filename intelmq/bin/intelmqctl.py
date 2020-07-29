@@ -224,7 +224,7 @@ class IntelMQCommandLineInterface:
 
         # intelmqctl debug
         debug = subcommands.add_parser('debug', help="Debugging features")
-        debug.set_defaults(func=service.print_help_and_exit)
+        debug.set_defaults(func=debug.print_help_and_exit)
         debug_commands = debug.add_subparsers(metavar="COMMAND")
 
         # intelmqctl service start
