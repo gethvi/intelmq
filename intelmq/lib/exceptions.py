@@ -6,11 +6,19 @@ import traceback
 
 from typing import Any, Optional, Union
 
-__all__ = ['InvalidArgument', 'ConfigurationError', 'IntelMQException',
-           'IntelMQHarmonizationException', 'InvalidKey', 'InvalidValue',
-           'KeyExists', 'KeyNotExists', 'PipelineError',
-           'MissingDependencyError',
-           ]
+__all__ = [
+    'InvalidArgument',
+    'ConfigurationError',
+    'IntelMQException',
+    'IntelMQHarmonizationException',
+    'InvalidKey',
+    'InvalidValue',
+    'KeyExists',
+    'KeyNotExists',
+    'PipelineError',
+    'MissingDependencyError',
+    'BotNotExists'
+]
 
 
 class IntelMQException(Exception):
@@ -56,6 +64,13 @@ class ConfigurationError(IntelMQException):
 
 class PipelineFactoryError(IntelMQException):
     pass
+
+
+class BotNotExists(IntelMQException):
+
+    def __init__(self, bot_id: str):
+        self.message = "bot '%s' not exists" % (bot_id)
+        super().__init__(self.message)
 
 
 '''
@@ -108,6 +123,7 @@ class MissingDependencyError(IntelMQException):
     """
     A missing dependency was detected. Log instructions on installation.
     """
+
     def __init__(self, dependency: str, version: Optional[str] = None,
                  installed: Optional[str] = None,
                  additional_text: Optional[str] = None):
@@ -156,6 +172,7 @@ class DecodingError(IntelMQException, ValueError):
     This is a separate Error to distinguish it from other exceptions as it is
     unrecoverable.
     """
+
     def __init__(self, encodings=None, exception: UnicodeDecodeError = None,
                  object: bytes = None):
         self.object = object
