@@ -15,7 +15,8 @@ REQUIRES = [
     'redis>=2.10',
     'requests>=2.2.0',
     'flask>=1.1.1',
-    'gunicorn==19.9.0'
+    'gunicorn==19.9.0',
+    'argcomplete>=1.11.1'
 ]
 
 exec(open(os.path.join(os.path.dirname(__file__),
