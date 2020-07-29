@@ -6,8 +6,12 @@ import argparse
 import argcomplete
 
 from intelmq.lib.utils import log
-from intelmq.lib.service import start_service
 from intelmq.lib.controller import IntelMQControllerNG, LOG_LEVEL
+
+
+def start_service(*args, **kwargs):
+    from intelmq.lib.service import run
+    run(*args, **kwargs)
 
 
 class IntelMQArgumentParser(argparse.ArgumentParser):

@@ -189,11 +189,12 @@ class IntelMQService(BaseApplication):
         return self.application
 
 
-def start_service(daemon: bool = True,
-                  host: str = "0.0.0.0",
-                  port: Union[str, int] = 8080,
-                  workers: int = 3,
-                  debug: bool = False):
+def run(daemon: bool = False,
+        host: str = "0.0.0.0",
+        port: Union[str, int] = 8080,
+        workers: int = 3,
+        debug: bool = False):
+
     options = {
         'bind': '%s:%s' % (host, str(port)),
         'workers': workers,
