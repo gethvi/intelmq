@@ -1,7 +1,6 @@
 import os
 from typing import Union
-from intelmq import LOG_LEVELS
-from intelmq.lib.controller import IntelMQControllerNG
+from intelmq.lib.controller import IntelMQControllerNG, LOG_LEVEL
 from flask import Flask, request, jsonify
 from gunicorn.six import iteritems
 from gunicorn.app.base import BaseApplication
@@ -97,7 +96,7 @@ def bots_status(group_or_bot_id=None):
 def bots_logs(group_or_bot_id=None):
     lines = request.args.get('lines', -1, int)
     level = request.args.get('level', intelmq_restapi.controller.log_level).upper()
-    if level not in LOG_LEVELS:
+    if level not in LOG_LEVEL:
         level = intelmq_restapi.controller.log_level
     return jsonify(intelmq_restapi.controller.bots_logs(group_or_bot_id, lines=lines, level=level))
 
