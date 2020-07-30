@@ -28,7 +28,7 @@ from intelmq import (BOTS_FILE, DEFAULT_LOGGING_LEVEL, DEFAULTS_CONF_FILE,
                      HARMONIZATION_CONF_FILE, PIPELINE_CONF_FILE,
                      RUNTIME_CONF_FILE, VAR_RUN_PATH, STATE_FILE_PATH,
                      DEFAULT_LOGGING_PATH, __version_info__, __version__,
-                     CONFIG_DIR, ROOT_DIR)
+                     CONFIG_DIR, ROOT_DIR, INSTALL_DIR)
 from intelmq.lib import utils
 from intelmq.lib.bot_debugger import BotDebugger
 from intelmq.lib.exceptions import MissingDependencyError, BotNotExists, InvalidArgument
@@ -1525,13 +1525,6 @@ class IntelMQControllerNG:
         # remove orphaned queues
         pass
 
-    def prune(self):
-        # remove orphaned logs
-        pass
-
-    def check(self):
-        pass
-
     def bot_add(self, bot_id: str, bot_configuration: dict):
         # TODO validate configuration
         with self.edit_runtime_configuration() as conf:
@@ -1544,6 +1537,60 @@ class IntelMQControllerNG:
         with self.edit_runtime_configuration() as conf:
             conf.pop(bot_id)
 
+    def system_info(self) -> dict:
+
+        output = dict()
+        output['paths'] = dict()
+        output['envs'] = dict()
+
+        for path in ('BOTS_FILE',
+                     'DEFAULTS_CONF_FILE',
+                     'HARMONIZATION_CONF_FILE',
+                     'PIPELINE_CONF_FILE',
+                     'RUNTIME_CONF_FILE',
+                     'VAR_RUN_PATH',
+                     'STATE_FILE_PATH',
+                     'DEFAULT_LOGGING_PATH',
+                     'CONFIG_DIR',
+                     'ROOT_DIR',
+                     'INSTALL_DIR'):
+            variables = globals()
+            output['paths'][path] = variables[path]
+
+        for variable in ('INTELMQ_ROOT_DIR',
+                         'INTELMQ_PATHS_NO_OPT',
+                         'INTELMQ_PATHS_OPT',
+                         'INTELMQ_MANAGER_CONTROLLER_CMD',
+                         'PATH'):
+            output['envs'][variable] = str(os.getenv(variable))
+
+        return output
+
+    def system_check(self):
+        # check that intelmq user exists
+        # check that files exists
+        # check permissions on files and dirs
+        # check that cronjobs exist for update-database of existing bots
+        pass
+
+    def system_setup(self):
+        # like intelmq-setup
+        # must be run as root, some
+        # creates intelmq user
+        # creates dirs
+        # creates files from examples
+        # sets permissions of files and dirs
+        # updates crontab based on existing bots (update-database)
+        pass
+
+    def system_prune(self, force: bool = False):
+        # remove orphaned logs, dumps, queues etc. from removed bots
+        pass
+
+    def config_check(self):
+        # checks configuration for errors
+        pass
+
     def bot_run(self):
         pass
 
@@ -1551,6 +1598,9 @@ class IntelMQControllerNG:
         pass
 
     def cache_clear(self):
+        pass
+
+    def debug_export(self):
         pass
 
     def get_bots(self, group_or_bot_id: Union[str, list] = None, allow_groups: bool = True) -> list:
@@ -1592,7 +1642,7 @@ class IntelMQControllerNG:
         else:
             raise InvalidArgument('bots', got=type(group_or_bot_id), expected=[str, list])
 
-    def get_groups(self):
+    def get_groups(self) -> list:
         return sorted(BOT_GROUP.keys())
 
     def get_pipeline(self) -> dict:

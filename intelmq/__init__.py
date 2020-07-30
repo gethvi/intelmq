@@ -31,3 +31,5 @@ RUNTIME_CONF_FILE = os.path.join(CONFIG_DIR, "runtime.conf")
 BOTS_FILE = os.path.join(CONFIG_DIR, "BOTS")
 STATE_FILE_PATH = path = os.path.abspath(os.path.join(VAR_STATE_PATH,
                                                       '../state.json'))
+
+INSTALL_DIR = os.path.abspath(os.path.join(__file__, os.pardir))
