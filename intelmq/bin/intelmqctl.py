@@ -156,14 +156,16 @@ class IntelMQCommandLineInterface:
         # intelmqctl logs
         logs = subcommands.add_parser('logs', help="Displays logs of bots")
         logs.set_defaults(func=self._print_bots_logs)
-        logs.add_argument("-n", "--lines", action="store", help="number of lines", type=int, default=-1)
-        logs.add_argument("-l", "--level", action="store", help="log level", default="INFO", choices=LOG_LEVEL.keys())
+        logs.add_argument("-n", "--lines", metavar="N", action="store", help="number of lines", type=int, default=-1)
+        logs.add_argument("-l", "--level", metavar="LEVEL", action="store", help="log level", default="INFO",
+                          choices=LOG_LEVEL.keys())
         logs.add_argument('bots', **bots_argument_kwargs)
 
         # intelmqctl dumps
         dumps = subcommands.add_parser('dumps', help="Displays dumps of bots")
         dumps.set_defaults(func=self._print_bots_dumps)
-        logs.add_argument('bots', **bots_argument_kwargs)
+        dumps.add_argument("-n", "--lines", action="store", help="number of lines", type=int, default=-1)
+        dumps.add_argument('bots', **bots_argument_kwargs)
 
         # intelmqctl stop
         stop = subcommands.add_parser('stop', help="Stop a bot or a group of bots")
@@ -266,6 +268,8 @@ class IntelMQCommandLineInterface:
 
         # intelmqctl queue prune
         queue_prune = queue_commands.add_parser('prune', help="remove all orphaned queues")
+        queue_prune.add_argument('-f', '--force', action="store_true", help="removes all queues")
+        queue_prune.add_argument('-d', '--dryrun', action="store_true", help="prints queues to be deleted")
         queue_prune.set_defaults(func=self.controller.queue_prune)
 
         # intelmqctl system info
@@ -277,12 +281,14 @@ class IntelMQCommandLineInterface:
         system_check.set_defaults(func=self.controller.system_check)
 
         # intelmqctl system setup
-        system_setup = system_commands.add_parser('setup', help="sets up the system for IntelMQ (should be run as root)")
+        system_setup = system_commands.add_parser('setup',
+                                                  help="sets up the system for IntelMQ (should be run as root)")
         system_setup.set_defaults(func=self.controller.system_setup)
 
         # intelmqctl system prune
         system_prune = system_commands.add_parser('prune', help="cleans logs, dumps, queues from orphaned bots")
-        system_prune.add_argument('-f', '--force', action="store_true", help="removes all logs, dumps, queues (factory reset)")
+        system_prune.add_argument('-f', '--force', action="store_true",
+                                  help="removes all logs, dumps, queues (factory reset)")
         system_prune.set_defaults(func=self.controller.system_prune)
 
         # intelmqctl config check
@@ -290,38 +296,9 @@ class IntelMQCommandLineInterface:
         config_check.set_defaults(func=self.controller.config_check)
 
         # intelmqctl debug export
-        debug_export = debug_commands.add_parser('export', help="exports compressed logs and dumps etc as attachment to github issue")
+        debug_export = debug_commands.add_parser('export',
+                                                 help="exports compressed logs and dumps etc as attachment to github issue")
         debug_export.set_defaults(func=self.controller.debug_export)
-
-        # # intelmqctl debug message
-        # debug_message = debug_commands.add_parser('message', help="helps debug problem with message")
-        # debug_message.set_defaults(func=self.controller.debug_message)
-        # debug_message_arguments = debug_message.add_mutually_exclusive_group()
-        # debug_message_arguments.add_argument('-g', '--get', action="store_true", help="Gets message from queue without removing")
-        # debug_message_arguments.add_argument('-p', '--pop', action="store_true", help="Pops message from queue")
-        # debug_message_arguments.add_argument('-s', '--send', action="store_true", help="Sends message to queue")
-        # debug_message.add_argument('bots', **bots_argument_kwargs)
-        #
-        # # intelmqctl debug run
-        # debug_run = debug_commands.add_parser('run', help="runs bot in interactive mode")
-
-
-
-
-
-        # intelmqctl debug info
-        # debug_info = debug_commands.add_parser('info', help="Debug info")
-        # debug_info.set_defaults(func=self._print_system_info)
-        # debug_info.add_argument('-p', '--paths', help='Give all paths',
-        #                           action='append_const', dest='sections',
-        #                           const='paths')
-        # debug_info.add_argument('-e', '--envs', action="store_true", help='Give environment variables',
-        #                           action='append_const', dest='sections',
-        #                           const='environment_variables')
-
-        # intelmqctl dumps
-
-        # TODO issue gather attachment logs (debug export)
 
         argcomplete.autocomplete(self.parser)
 

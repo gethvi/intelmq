@@ -1521,9 +1521,25 @@ class IntelMQControllerNG:
 
         return cleared_queues
 
-    def queue_prune(self):
+    def queue_prune(self, force: bool = False, dryrun: bool = False) -> dict:
         # remove orphaned queues
-        pass
+        # currently it just clears queues
+        deleted_queues = dict()
+
+        with self._connect_pipeline() as pipeline:
+            orphaned_queues = pipeline.nonempty_queues()
+
+            if not force:
+                orphaned_queues = [queue for queue in orphaned_queues if queue not in self.get_queues(all=True)]
+
+            for orphaned_queue in orphaned_queues:
+
+                if not dryrun:
+                    pipeline.clear_queue(orphaned_queue)
+
+                deleted_queues[orphaned_queue] = "deleted"
+
+        return deleted_queues
 
     def bot_add(self, bot_id: str, bot_configuration: dict):
         # TODO validate configuration
@@ -1536,6 +1552,9 @@ class IntelMQControllerNG:
         self.bots_stop(bot_id)
         with self.edit_runtime_configuration() as conf:
             conf.pop(bot_id)
+
+    def bot_run(self):
+        pass
 
     def system_info(self) -> dict:
 
@@ -1567,8 +1586,9 @@ class IntelMQControllerNG:
         return output
 
     def system_check(self):
+        # --skip-user, --skip-cron --skip-files
         # check that intelmq user exists
-        # check that files exists
+        # check that files and dirs exist
         # check permissions on files and dirs
         # check that cronjobs exist for update-database of existing bots
         pass
@@ -1583,15 +1603,27 @@ class IntelMQControllerNG:
         # updates crontab based on existing bots (update-database)
         pass
 
-    def system_prune(self, force: bool = False):
+    def system_prune(self, force: bool = False, dryrun: bool = False):
         # remove orphaned logs, dumps, queues etc. from removed bots
         pass
 
+    def logs_prune(self, force: bool = False, dryrun: bool = False) -> list:
+
+        bots = self.get_bots() + ['intelmqctl', 'access']
+        logging_path = self.defaults_configuration['logging_path']
+        logfiles = [f for f in os.listdir(os.path.join(logging_path)) if f.endswith(".log")]
+        deleted_logfiles = list()
+
+        for logfile in logfiles:
+            if force or logfile[:-4] not in bots:
+                if not dryrun:
+                    os.remove(os.path.join(logging_path, logfile))
+                deleted_logfiles.append(logfile)
+
+        return deleted_logfiles
+
     def config_check(self):
         # checks configuration for errors
-        pass
-
-    def bot_run(self):
         pass
 
     def cache_status(self):
@@ -1637,7 +1669,7 @@ class IntelMQControllerNG:
 
                 bots += self.get_bots(value)
 
-            return sorted(bots)
+            return sorted(list(set(bots)))
 
         else:
             raise InvalidArgument('bots', got=type(group_or_bot_id), expected=[str, list])
@@ -1682,7 +1714,7 @@ class IntelMQControllerNG:
         else:
             queues = [bot_id + "-queue" for bot_id in bots]
 
-        return sorted(queues)
+        return sorted(list(set(queues)))
 
     @contextmanager
     def _connect_pipeline(self):
