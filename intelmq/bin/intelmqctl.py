@@ -292,7 +292,7 @@ class IntelMQCommandLineInterface:
         system_prune.set_defaults(func=self.controller.system_prune)
 
         # intelmqctl config check
-        config_check = config_commands.add_parser('config', help="checks configuration for errors")
+        config_check = config_commands.add_parser('check', help="checks configuration for errors")
         config_check.set_defaults(func=self.controller.config_check)
 
         # intelmqctl debug export
