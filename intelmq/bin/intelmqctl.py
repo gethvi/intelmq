@@ -10,8 +10,8 @@ from intelmq.lib.controller import IntelMQControllerNG, LOG_LEVEL
 
 
 def start_service(*args, **kwargs):
-    from intelmq.lib.service import run
-    run(*args, **kwargs)
+    from intelmq.lib.service import start
+    start(*args, **kwargs)
 
 
 class IntelMQArgumentParser(argparse.ArgumentParser):
