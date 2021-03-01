@@ -117,12 +117,12 @@ class Message(dict):
 
         super().__init__()
         if isinstance(message, dict):
-            self.iterable = message.items()
-        elif isinstance(message, tuple):
             self.iterable = message
+        elif isinstance(message, tuple):
+            self.iterable = dict(message)
         else:
             raise ValueError("Type %r of message can't be handled, must be dict or tuple.", type(message))
-        for key, value in self.iterable:
+        for key, value in self.iterable.items():
             if not self.add(key, value, sanitize=False, raise_failure=False):
                 self.add(key, value, sanitize=True)
 
